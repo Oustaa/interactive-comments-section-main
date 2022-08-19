@@ -5,8 +5,8 @@ window.onload = () => {
     loadComments();
 };
 
-const fetchComments = async() => {
-    return fetch("../data.json")
+const fetchComments = () => {
+    fetch("../data.json")
         .then((resp) => resp.json())
         .then((data) => {
             localStorage.setItem("data", JSON.stringify(data));
@@ -50,11 +50,10 @@ const replies = (replies, currentUser) => {
     return repliseHolder;
 };
 
-function loadComments() {
+const loadComments = () => {
     fetchComments();
     const data = JSON.parse(localStorage.getItem("data"));
-    if (JSON.parse(localStorage.getItem("id")) === null)
-        localStorage.setItem("id", 0);
+
     for (let comment of data.comments) {
         CommentContainer.append(Comment(comment, data.currentUser));
 
@@ -63,27 +62,25 @@ function loadComments() {
         }
     }
     Comments.append(addReply());
-}
+};
 
-function addComment(element) {
+const addComment = (element) => {
     const currentUser = JSON.parse(localStorage.getItem("data")).currentUser;
 
-    const textArea = element.previousElementSibling;
     const content = element.previousElementSibling.value.replaceAll("\n", "<br>");
-    if (content.length <= 120) return;
+    if (content.length <= 20) return;
     const comment = {
         content,
         createdAt: "now",
-        id: 515,
         score: 0,
         user: currentUser,
+        id: 51,
     };
     const newELement = Comment(comment, currentUser);
     const parentElement = element.parentNode;
     parentElement.parentNode.insertBefore(newELement, parentElement);
 
     // removing reply Area after adiing a comment
-
     const addComment = document.querySelectorAll(".add__Comment");
     const index = Array(...addComment).indexOf(element.parentNode);
     console.log(index, Array(...addComment).length);
@@ -95,7 +92,7 @@ function addComment(element) {
         return;
     }
     element.parentNode.parentNode.removeChild(element.parentNode);
-}
+};
 
 const replyToComment = (element) => {
     const replyTo = element.parentNode.childNodes[0].childNodes[1].textContent;
@@ -103,9 +100,10 @@ const replyToComment = (element) => {
 
     // clearing All replys from the Dom
     const addComment = document.querySelectorAll(".add__Comment");
-    console.log(...addComment);
-    if (addComment.length < 1)
+    console.log(addComment.length);
+    if (addComment.length > 1) {
         addComment[0].parentNode.removeChild(addComment[0]);
+    }
 
     if (nextSibling.id === "replise") {
         element.parentNode.nextSibling.append(addReply(replyTo));
@@ -121,9 +119,9 @@ const replyToComment = (element) => {
 };
 
 const Comment = (comment, CurrentUser) => {
-    const { content, createdAt, score, user } = comment;
-    const id = JSON.parse(localStorage.getItem("id"));
-    localStorage.setItem("id", id + 1);
+    const { content, id, createdAt, score, user } = comment;
+    // const id = JSON.parse(localStorage.getItem("id"));
+    // localStorage.setItem("id", id + 1);
     //creating Element
     const CommentHolder = document.createElement("div");
     const Commentheader = document.createElement("div");
@@ -158,7 +156,12 @@ const Comment = (comment, CurrentUser) => {
 
     CommentHolder.setAttribute("data-id", id);
 
+    // Add Events To btns
     btnDelete.addEventListener("click", () => deleteComment(id));
+    btnReply.addEventListener("click", () => replyToComment(btnReply));
+
+    btnMinus.addEventListener("click", () => decreaseScore(btnMinus));
+    btnPlus.addEventListener("click", () => increaseScore(btnPlus));
 
     //setting content
     CommentImage.setAttribute("src", user.image.png);
@@ -179,7 +182,7 @@ const Comment = (comment, CurrentUser) => {
 
     // join EveryThing together
     E_D_Btns.append(btnDelete, btnEdit);
-    btnReply.addEventListener("click", () => replyToComment(btnReply));
+
     const headerConntent =
         CurrentUser.username !== user.username ?
         [CommentImage, userName, creatAt] :
@@ -212,6 +215,7 @@ const deleteComment = (id) => {
         commentTodelet.parentNode.removeChild(commentTodelet);
         closeComfermWindow();
     });
+
     const cancelBtn = document.querySelector("#cancelBtn");
 
     cancelBtn.addEventListener("click", () => {
@@ -226,4 +230,17 @@ const closeComfermWindow = () => {
     Comfermdelete.classList.remove("animate");
     backDrop.classList.remove("animatebAckDrop");
     document.body.style.overflowY = "auto";
+};
+
+const decreaseScore = (element) => {
+    scoreElement = element.previousElementSibling;
+    scoreValue = scoreElement.textContent;
+    if (scoreValue == 0) return;
+    scoreElement.textContent = Number(scoreValue) - 1;
+};
+
+const increaseScore = (element) => {
+    const scoreElement = element.nextSibling;
+    const scoreValue = scoreElement.textContent;
+    scoreElement.textContent = Number(scoreValue) + 1;
 };
