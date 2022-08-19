@@ -120,14 +120,20 @@ const replyToComment = (element) => {
 
 const Comment = (comment, CurrentUser) => {
     const { content, id, createdAt, score, user } = comment;
+
     // const id = JSON.parse(localStorage.getItem("id"));
     // localStorage.setItem("id", id + 1);
+
     //creating Element
     const CommentHolder = document.createElement("div");
     const Commentheader = document.createElement("div");
     const CommentBody = document.createElement("div");
     const CommentReactions = document.createElement("div");
     const E_D_Btns = document.createElement("div");
+
+    const editForm = document.createElement("div");
+    const textAreaComment = document.createElement("textarea");
+    const comfermEdit = document.createElement("button");
 
     const CommentImage = document.createElement("img");
     const userName = document.createElement("h3");
@@ -153,7 +159,7 @@ const Comment = (comment, CurrentUser) => {
     btnReply.classList.add("Comment__reply");
     YouBadge.classList.add("YouBadg");
     E_D_Btns.classList.add("E_D_Btns");
-
+    editForm.classList.add("Hide", "editForm");
     CommentHolder.setAttribute("data-id", id);
 
     // Add Events To btns
@@ -162,17 +168,33 @@ const Comment = (comment, CurrentUser) => {
 
     btnMinus.addEventListener("click", () => decreaseScore(btnMinus));
     btnPlus.addEventListener("click", () => increaseScore(btnPlus));
-
+    textAreaComment.addEventListener("input", function(e) {
+        this.style.height = "auto";
+        this.style.height = this.scrollHeight + "px";
+    });
+    btnEdit.addEventListener("click", () => {
+        editForm.classList.remove("Hide");
+        CommentContent.classList.add("Hide");
+        textAreaComment.focus();
+    });
+    comfermEdit.addEventListener("click", () => {
+        const newContent = textAreaComment.textContent;
+        CommentContent.textContent = newContent;
+        editForm.classList.add("Hide");
+        CommentContent.classList.remove("Hide");
+        console.log(CommentContent);
+    });
     //setting content
     CommentImage.setAttribute("src", user.image.png);
     userName.textContent = user.username;
     creatAt.textContent = createdAt;
     CommentContent.innerHTML = content;
     YouBadge.textContent = "You";
-
+    textAreaComment.textContent = content;
     btnPlus.innerHTML = "<img src='./images/icon-plus.svg' >";
     btnMinus.innerHTML = "<img src='./images/icon-minus.svg' >";
     SpanScore.innerHTML = score;
+    comfermEdit.textContent = "UPDATE";
 
     btnReply.innerHTML =
         "<img src='./images/icon-reply.svg' > <span>Reply</span>";
@@ -182,15 +204,16 @@ const Comment = (comment, CurrentUser) => {
 
     // join EveryThing together
     E_D_Btns.append(btnDelete, btnEdit);
-
-    const headerConntent =
-        CurrentUser.username !== user.username ?
+    const userTest = CurrentUser.username !== user.username;
+    const headerConntent = userTest ?
         [CommentImage, userName, creatAt] :
         [CommentImage, userName, YouBadge, creatAt];
-    const ActionBtns =
-        CurrentUser.username !== user.username ? btnReply : E_D_Btns;
+    const ActionBtns = userTest ? btnReply : E_D_Btns;
+    editForm.append(textAreaComment, comfermEdit);
+    const bodyContent = userTest ? [CommentContent] : [CommentContent, editForm];
+
     Commentheader.append(...headerConntent);
-    CommentBody.append(CommentContent);
+    CommentBody.append(...bodyContent);
     CommentReactions.append(btnPlus, SpanScore, btnMinus);
     CommentHolder.append(
         Commentheader,
@@ -207,9 +230,12 @@ const deleteComment = (id) => {
 
     const Comfermdelete = document.querySelector("#Comfermdelete");
     const backDrop = document.querySelector("#backdrop");
+
     Comfermdelete.classList.add("animate");
     backDrop.classList.add("animatebAckDrop");
+
     const deleteBtn = document.querySelector("#Deletebtn");
+
     deleteBtn.addEventListener("click", () => {
         const commentTodelet = document.querySelector(`[data-id='${id}']`);
         commentTodelet.parentNode.removeChild(commentTodelet);
@@ -218,9 +244,7 @@ const deleteComment = (id) => {
 
     const cancelBtn = document.querySelector("#cancelBtn");
 
-    cancelBtn.addEventListener("click", () => {
-        closeComfermWindow();
-    });
+    cancelBtn.addEventListener("click", () => closeComfermWindow());
 };
 
 const closeComfermWindow = () => {
@@ -243,4 +267,17 @@ const increaseScore = (element) => {
     const scoreElement = element.nextSibling;
     const scoreValue = scoreElement.textContent;
     scoreElement.textContent = Number(scoreValue) + 1;
+};
+
+const textarea = document.getElementById("txt");
+
+// textarea.addEventListener("input", function(e) {
+//     this.style.height = "auto";
+//     this.style.height = this.scrollHeight + "px";
+// });
+
+const createElement = (type, classes, content = null) => {
+    const element = document.createElement(type);
+    element.classList.add(...classes);
+    return element;
 };

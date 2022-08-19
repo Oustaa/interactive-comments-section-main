@@ -29,6 +29,8 @@ body {
 button {
     border: none;
     background-color: inherit;
+    border-radius: var(--roundnes);
+    font-size: 1rem;
 }
 
 button:hover {
@@ -68,7 +70,7 @@ main {
 }
 
 .Hide {
-    display: none;
+    display: none !important;
 }
 
 
@@ -219,6 +221,7 @@ main {
     border-radius: var(--roundnes);
     opacity: 0;
     position: fixed;
+    z-index: -1;
     width: 90%;
     max-width: 350px;
     padding: 1.5rem;
@@ -238,10 +241,10 @@ main {
 }
 
 #Comfermdelete #btns button {
-    padding: .8rem 1.5rem;
     background-color: var(--Soft-Red);
     border-radius: var(--roundnes);
     color: var(--White);
+    padding: .8rem 1.5rem;
 }
 
 #Comfermdelete #btns button:first-child {
@@ -264,7 +267,7 @@ main {
 }
 
 .animatebAckDrop {
-    animation: backDropAnimation 700ms ease-in forwards;
+    animation: backDropAnimation 250ms ease-in-out forwards;
 }
 
 
@@ -350,7 +353,7 @@ textarea:focus {
         top: 45%;
         z-index: 3;
     }
-    70% {
+    50% {
         opacity: 1;
         z-index: 3;
     }
@@ -370,4 +373,28 @@ textarea:focus {
         opacity: 0.5;
         z-index: 2;
     }
+}
+
+.editForm textarea {
+    width: 100%;
+    background-color: inherit;
+    border-radius: var(--roundnes);
+    padding-block: .5rem 1.5rem;
+    resize: none;
+    color: var(--Grayish-Blue);
+    font-weight: 400;
+    overflow-y: hidden;
+    margin-block: 1rem;
+}
+
+.editForm {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.editForm button {
+    background-color: var(--Moderate-blue);
+    color: var(--White);
+    padding: .65rem 1rem;
 }
